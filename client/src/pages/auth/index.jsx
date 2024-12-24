@@ -40,7 +40,7 @@ const Auth = () => {
   const handleSignup = async () => {
     // Implement signup logic here
     if(validateSignup()){
-      alert("Done");
+ 
       const response = await apiClient.post(SIGNUP_ROUTE, {email, password});
       console.log({response});
     }

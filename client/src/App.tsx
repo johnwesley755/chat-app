@@ -14,7 +14,9 @@ const App: React.FC = () => {
         <AuthProvider>
           <SocketProvider>
             <ChatProvider>
-              <AppRoutes />
+              <div className="app-container h-screen">
+                <AppRoutes />
+              </div>
             </ChatProvider>
           </SocketProvider>
         </AuthProvider>

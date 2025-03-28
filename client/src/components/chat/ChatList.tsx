@@ -4,6 +4,7 @@ import { AuthContext } from '../../context/AuthContext';
 import { Chat } from '../../types/chat.types';
 import { formatDistanceToNow } from 'date-fns';
 import { MessageCircle, Users } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface ChatListProps {
   onNewChat: () => void;
@@ -13,6 +14,7 @@ const ChatList: React.FC<ChatListProps> = ({ onNewChat }) => {
   const { state, selectChat, getChats } = useContext(ChatContext);
   const { state: authState } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
   
   // Add an effect to refresh chats when component mounts
   useEffect(() => {
@@ -24,9 +26,12 @@ const ChatList: React.FC<ChatListProps> = ({ onNewChat }) => {
     if (loading) return;
     setLoading(true);
     
-    // Prevent default browser behavior that might cause scrolling
     try {
+      // First select the chat in context
       await selectChat(chat);
+      
+      // Use React Router's navigate for proper routing
+      navigate(`/chat/${chat._id}`, { replace: false });
     } catch (error) {
       console.error("Error selecting chat:", error);
     } finally {

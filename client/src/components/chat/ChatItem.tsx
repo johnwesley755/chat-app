@@ -1,10 +1,11 @@
-import React from 'react';
-import { formatDistanceToNow } from 'date-fns';
-import Avatar from '../ui/Avatar';
-import { Chat } from '../../types/chat.types';
-import { useAuth } from '../../hooks/useAuth';
-import { useSocket } from '../../hooks/useSocket';
-import { MessageCircle, Users, CheckCheck } from 'lucide-react';
+import React, { useMemo } from "react";
+import { formatDistanceToNow } from "date-fns";
+import Avatar from "../ui/Avatar";
+import { Chat } from "../../types/chat.types";
+import { useAuth } from "../../hooks/useAuth";
+import { useSocket } from "../../hooks/useSocket";
+import { Users, CheckCheck, MessageSquare } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 
 interface ChatItemProps {
   chat: Chat;
@@ -15,86 +16,107 @@ interface ChatItemProps {
 const ChatItem: React.FC<ChatItemProps> = ({ chat, isSelected, onClick }) => {
   const { state: authState } = useAuth();
   const socket = useSocket();
-  // Use type assertion to avoid TypeScript error
+  const navigate = useNavigate();
   const onlineUsers = (socket as any).onlineUsers || {};
-  
-  // Get chat name (for group chat) or other user's name (for 1-on-1)
-  const getChatName = () => {
-    if (chat.isGroupChat) {
-      return chat.chatName;
+
+  // Memoize derived data to improve performance
+  const chatData = useMemo(() => {
+    // Get other user for 1-on-1 chats
+    const otherUser = !chat.isGroupChat
+      ? chat.users.find((user) => user._id !== authState.user?._id)
+      : null;
+
+    // Chat name
+    const chatName = chat.isGroupChat
+      ? chat.chatName
+      : otherUser?.username || "Unknown User";
+
+    // Avatar
+    const avatar = chat.isGroupChat ? undefined : otherUser?.avatar;
+
+    // Status
+    const status =
+      !chat.isGroupChat && otherUser
+        ? onlineUsers[otherUser._id]
+          ? "online" as const
+          : "offline" as const
+        : undefined;
+
+    // Latest message preview
+    let messagePreview = "No messages yet";
+    if (chat.latestMessage) {
+      const sender =
+        chat.latestMessage.sender._id === authState.user?._id
+          ? "You"
+          : chat.latestMessage.sender.username;
+
+      messagePreview = `${sender}: ${chat.latestMessage.content.substring(
+        0,
+        30
+      )}${chat.latestMessage.content.length > 30 ? "..." : ""}`;
     }
-    
-    const otherUser = chat.users.find(
-      (user) => user._id !== authState.user?._id
-    );
-    return otherUser?.username || 'Unknown User';
-  };
-  
-  // Get avatar for chat (group icon or other user's avatar)
-  const getAvatar = () => {
-    if (chat.isGroupChat) {
-      return undefined; // Use default group avatar instead of null
+
+    // Format time
+    let timeDisplay = "";
+    if (chat.latestMessage) {
+      const messageDate = new Date(chat.latestMessage.createdAt);
+      const now = new Date();
+      const diffInHours =
+        (now.getTime() - messageDate.getTime()) / (1000 * 60 * 60);
+
+      if (diffInHours < 24) {
+        timeDisplay = messageDate.toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+      } else if (diffInHours < 168) {
+        timeDisplay = messageDate.toLocaleDateString([], { weekday: "short" });
+      } else {
+        timeDisplay = messageDate.toLocaleDateString([], {
+          month: "short",
+          day: "numeric",
+        });
+      }
     }
-    
-    const otherUser = chat.users.find(
-      (user) => user._id !== authState.user?._id
-    );
-    return otherUser?.avatar;
-  };
-  
-  // Get online status for 1-on-1 chats
-  const getStatus = () => {
-    if (chat.isGroupChat) {
-      return undefined;
-    }
-    
-    const otherUser = chat.users.find(
-      (user) => user._id !== authState.user?._id
-    );
-    
-    if (!otherUser) return 'offline';
-    
-    return onlineUsers[otherUser._id] ? 'online' : 'offline';
-  };
-  
-  // Format the latest message preview
-  const getLatestMessagePreview = () => {
-    if (!chat.latestMessage) {
-      return 'No messages yet';
-    }
-    
-    const sender = chat.latestMessage.sender._id === authState.user?._id
-      ? 'You'
-      : chat.latestMessage.sender.username;
-    
-    return `${sender}: ${chat.latestMessage.content.substring(0, 30)}${
-      chat.latestMessage.content.length > 30 ? '...' : ''
-    }`;
-  };
-  
-  // Format the time of the latest message
-  const getLatestMessageTime = () => {
-    if (!chat.latestMessage) {
-      return '';
-    }
-    
-    return formatDistanceToNow(new Date(chat.latestMessage.createdAt), {
-      addSuffix: true,
-    });
+
+    // Check if message is from current user
+    const isMessageFromCurrentUser = chat.latestMessage
+      ? chat.latestMessage.sender._id === authState.user?._id
+      : false;
+
+    return {
+      chatName,
+      avatar,
+      status,
+      messagePreview,
+      timeDisplay,
+      isMessageFromCurrentUser,
+      hasUnreadMessages: false, // Placeholder - implement actual logic
+    };
+  }, [chat, authState.user, onlineUsers]);
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Navigate programmatically to ensure proper state updates
+    navigate(`/chat/${chat._id}`);
+
+    // Call the provided onClick handler
+    onClick();
   };
 
-  // Check if there are unread messages
-  const hasUnreadMessages = () => {
-    // This is a placeholder - implement your unread message logic here
-    return false;
-  };
-  
   return (
     <div
-      className={`px-4 py-3.5 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors duration-200 ${
-        isSelected ? 'bg-blue-50 dark:bg-gray-700 border-l-4 border-blue-500' : ''
+      className={`px-4 py-3.5 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition-colors duration-200 border-b border-gray-100 dark:border-gray-700 ${
+        isSelected
+          ? "bg-blue-50 dark:bg-gray-700 border-l-4 border-blue-500 pl-3"
+          : ""
       }`}
-      onClick={onClick}
+      onClick={handleClick}
+      role="button"
+      tabIndex={0}
+      aria-selected={isSelected}
     >
       <div className="flex items-center space-x-3">
         {chat.isGroupChat ? (
@@ -104,34 +126,35 @@ const ChatItem: React.FC<ChatItemProps> = ({ chat, isSelected, onClick }) => {
         ) : (
           <div className="relative flex-shrink-0">
             <Avatar
-              src={getAvatar()}
-              alt={getChatName()}
-              status={getStatus()}
+              src={chatData.avatar}
+              alt={chatData.chatName}
+              status={chatData.status}
+              size="md"
             />
           </div>
         )}
-        
+
         <div className="flex-1 min-w-0">
           <div className="flex justify-between items-center">
             <h3 className="text-base font-semibold text-gray-900 dark:text-white truncate">
-              {getChatName()}
+              {chatData.chatName}
             </h3>
             <span className="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
-              {getLatestMessageTime()}
+              {chatData.timeDisplay}
             </span>
           </div>
-          
+
           <div className="flex justify-between items-center mt-1">
-            <p className="text-sm text-gray-600 dark:text-gray-300 truncate">
-              {getLatestMessagePreview()}
+            <p className="text-sm text-gray-600 dark:text-gray-300 truncate max-w-[75%]">
+              {chatData.messagePreview}
             </p>
-            
+
             <div className="flex items-center ml-2">
-              {chat.latestMessage && chat.latestMessage.sender._id === authState.user?._id && (
+              {chatData.isMessageFromCurrentUser && (
                 <CheckCheck size={16} className="text-blue-500 flex-shrink-0" />
               )}
-              
-              {hasUnreadMessages() && (
+
+              {chatData.hasUnreadMessages && (
                 <span className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center text-xs text-white font-medium ml-1">
                   3
                 </span>

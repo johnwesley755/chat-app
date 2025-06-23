@@ -7,15 +7,18 @@ export const initializeSocket = (): Socket<SocketEvents> => {
   if (!socket) {
     const token = localStorage.getItem('token');
     
-    socket = io(process.env.REACT_APP_API_URL || 'http://localhost:5000', {
-      auth: {
-        token,
-      },
-      transports: ['websocket'],
-      reconnection: true,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 1000,
-    });
+    socket = io(
+      process.env.VITE_SOCKET_URL || "https://chat-app-2h8s.onrender.com",
+      {
+        auth: {
+          token,
+        },
+        transports: ["websocket"],
+        reconnection: true,
+        reconnectionAttempts: 5,
+        reconnectionDelay: 1000,
+      }
+    );
     
     socket.on('connect_error', (err) => {
       console.error('Socket connection error:', err.message);

@@ -1,7 +1,8 @@
 import { io, Socket } from 'socket.io-client';
 
 // Use Vite's environment variables instead of process.env
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000';
+const SOCKET_URL =
+  import.meta.env.VITE_SOCKET_URL || "https://chat-app-2h8s.onrender.com";
 
 let socket: Socket | null = null;
 let isConnecting = false;

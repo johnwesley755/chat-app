@@ -26,9 +26,27 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(helmet());
 app.use(morgan('dev'));
+
+// Define allowed origins
+const allowedOrigins = [
+  'https://chat-app-beta-six-31.vercel.app',
+  'https://chat-5ctg4pfwi-john-wesleys-projects-57e81bf5.vercel.app',
+  // Add any other client URLs here
+];
+
+// CORS configuration
 app.use(
   cors({
-    origin: [process.env.CLIENT_URL || 'https://chat-app-beta-six-31.vercel.app', 'https://chat-5ctg4pfwi-john-wesleys-projects-57e81bf5.vercel.app'],
+    origin: function(origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      
+      if (allowedOrigins.indexOf(origin) === -1) {
+        const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+        return callback(new Error(msg), false);
+      }
+      return callback(null, true);
+    },
     credentials: true,
   })
 );

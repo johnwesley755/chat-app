@@ -123,12 +123,3 @@ Aspiring Web Developer & UI/UX Designer
 This project is open source and free to use.
 
 ---
-
-
-
-```
-
----
-
-Let me know if you'd like to include deployment instructions (e.g., for **Render**, **Vercel**, or **Firebase**) or update the branding with your app name/logo!
-```

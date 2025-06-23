@@ -28,7 +28,7 @@ app.use(helmet());
 app.use(morgan('dev'));
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || 'https://chat-app-beta-six-31.vercel.app/',
+    origin: [process.env.CLIENT_URL || 'https://chat-app-beta-six-31.vercel.app', 'https://chat-5ctg4pfwi-john-wesleys-projects-57e81bf5.vercel.app'],
     credentials: true,
   })
 );
@@ -59,7 +59,7 @@ const server = http.createServer(app);
 // Create Socket.IO server
 const io = new SocketIOServer(server, {
   cors: {
-    origin: process.env.CLIENT_URL || 'https://chat-app-beta-six-31.vercel.app',
+    origin: [process.env.CLIENT_URL || 'https://chat-app-beta-six-31.vercel.app', 'https://chat-5ctg4pfwi-john-wesleys-projects-57e81bf5.vercel.app'],
     credentials: true,
   },
 });

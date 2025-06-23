@@ -2,7 +2,7 @@ import axios, { InternalAxiosRequestConfig } from 'axios';
 
 // Use Vite's environment variables
 const API_URL =
-  import.meta.env.VITE_SOCKET_URL || "https://chat-app-2h8s.onrender.com/api";
+  import.meta.env.VITE_SOCKET_URL || "https://chat-app-2h8s.onrender.com";
 
 const api = axios.create({
   baseURL: API_URL,

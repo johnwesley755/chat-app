@@ -13,7 +13,7 @@ interface RegisterData {
 }
 
 export const login = async (data: LoginData): Promise<any> => {
-  const response = await api.post('/auth/login', data);
+  const response = await api.post('/api/auth/login', data);
   
   if (response.data.token) {
     localStorage.setItem('token', response.data.token);
@@ -23,7 +23,7 @@ export const login = async (data: LoginData): Promise<any> => {
 };
 
 export const register = async (data: RegisterData): Promise<any> => {
-  const response = await api.post('/auth/register', data);
+  const response = await api.post('/api/auth/register', data);
   
   if (response.data.token) {
     localStorage.setItem('token', response.data.token);
@@ -34,19 +34,19 @@ export const register = async (data: RegisterData): Promise<any> => {
 
 export const logout = async (): Promise<void> => {
   try {
-    await api.post('/auth/logout');
+    await api.post('/api/auth/logout');
   } finally {
     localStorage.removeItem('token');
   }
 };
 
 export const getCurrentUser = async (): Promise<User> => {
-  const response = await api.get('/auth/me');
+  const response = await api.get('/api/auth/me');
   return response.data;
 };
 
 export const forgotPassword = async (email: string): Promise<any> => {
-  const response = await api.post('/auth/forgot-password', { email });
+  const response = await api.post('/api/auth/forgot-password', { email });
   return response.data;
 };
 

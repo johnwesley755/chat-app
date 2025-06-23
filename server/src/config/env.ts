@@ -8,10 +8,10 @@ dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 export const env = {
   NODE_ENV: process.env.NODE_ENV || 'development',
   PORT: process.env.PORT || 5000,
-  MONGO_URI: process.env.MONGO_URI || 'mongodb://localhost:27017/chat-app',
+  MONGO_URI: process.env.MONGO_URI || 'mongodb+srv://johnwesley8113:v9kmS6jnuLSks4IH@cluster0.gpsnyuz.mongodb.net/',
   JWT_SECRET: process.env.JWT_SECRET || 'secret',
   JWT_EXPIRE: process.env.JWT_EXPIRE || '30d',
-  CLIENT_URL: process.env.CLIENT_URL || 'http://localhost:5173',
+  CLIENT_URL: process.env.CLIENT_URL || 'https://chat-app-beta-six-31.vercel.app/',
 };
 
 // Validate required environment variables

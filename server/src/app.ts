@@ -19,7 +19,7 @@ app.use(helmet());
 app.use(morgan('dev'));
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: process.env.CLIENT_URL || 'https://chat-app-beta-six-31.vercel.app/',
     credentials: true,
   })
 );

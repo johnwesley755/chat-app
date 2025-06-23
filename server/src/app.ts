@@ -11,6 +11,10 @@ import messageRoutes from './routes/messageRoutes';
 
 // Create Express app
 const app = express();
+const allowedOrigins = [
+  "https://chat-app-beta-six-31.vercel.app",
+  "http://localhost:5173",
+];
 
 // Middleware
 app.use(express.json());
@@ -19,10 +23,13 @@ app.use(helmet());
 app.use(morgan('dev'));
 app.use(
   cors({
-    origin: [
-      "https://chat-app-beta-six-31.vercel.app", // ✅ No slash
-      "http://localhost:5173", // ✅ Optional for local dev
-    ],
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );

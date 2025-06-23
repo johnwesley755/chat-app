@@ -11,7 +11,7 @@ export const env = {
   MONGO_URI: process.env.MONGO_URI || 'mongodb+srv://johnwesley8113:v9kmS6jnuLSks4IH@cluster0.gpsnyuz.mongodb.net/',
   JWT_SECRET: process.env.JWT_SECRET || 'secret',
   JWT_EXPIRE: process.env.JWT_EXPIRE || '30d',
-  CLIENT_URL: process.env.CLIENT_URL || 'https://chat-app-beta-six-31.vercel.app/',
+  CLIENT_URL: process.env.CLIENT_URL || 'https://chat-app-beta-six-31.vercel.app',
 };
 
 // Validate required environment variables

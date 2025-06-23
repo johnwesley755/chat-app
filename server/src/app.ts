@@ -19,10 +19,14 @@ app.use(helmet());
 app.use(morgan('dev'));
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || 'https://chat-app-beta-six-31.vercel.app/',
+    origin: [
+      "https://chat-app-beta-six-31.vercel.app", // ✅ No slash
+      "http://localhost:5173", // ✅ Optional for local dev
+    ],
     credentials: true,
   })
 );
+
 
 // Routes
 app.use('/api/auth', authRoutes);

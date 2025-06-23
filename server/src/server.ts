@@ -71,7 +71,7 @@ initializeSocketIO(io);
 app.use(errorMiddleware);
 
 // Connect to MongoDB
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/chat-app';
+const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://johnwesley8113:v9kmS6jnuLSks4IH@cluster0.gpsnyuz.mongodb.net/';
 mongoose
   .connect(MONGO_URI)
   .then(() => {
